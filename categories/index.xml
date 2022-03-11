@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on Techy Tonik</title>
+    <link>https://crazystylus.github.io/blog/categories/</link>
+    <description>Recent content in Categories on Techy Tonik</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 31 Mar 2021 23:59:29 +0530</lastBuildDate><atom:link href="https://crazystylus.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CloudBuild</title>
+      <link>https://crazystylus.github.io/blog/categories/cloudbuild/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/categories/cloudbuild/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DevOps</title>
+      <link>https://crazystylus.github.io/blog/categories/devops/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/categories/devops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker</title>
+      <link>https://crazystylus.github.io/blog/categories/docker/</link>
+      <pubDate>Mon, 29 Mar 2021 23:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/categories/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>GCloud</title>
+      <link>https://crazystylus.github.io/blog/categories/gcloud/</link>
+      <pubDate>Sat, 06 Mar 2021 14:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/categories/gcloud/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

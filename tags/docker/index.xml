@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on Techy Tonik</title>
+    <link>https://crazystylus.github.io/blog/tags/docker/</link>
+    <description>Recent content in Docker on Techy Tonik</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 31 Mar 2021 23:59:29 +0530</lastBuildDate><atom:link href="https://crazystylus.github.io/blog/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CloudBuild: Speeding container builds by caching</title>
+      <link>https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-2/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-2/</guid>
+      <description>Introduction When building containers we can always leverage the layer caching mechanism to speed up the container builds. This can become tricky depending on the CI/CD tool used for building the images. For offering like Jenkins we may not need to worry much as we can expect a copy of previously build container image to be present. On the other hand, if we see Cloud Build it won&amp;rsquo;t have a copy of previous build, as the offering is serverless so starts light and stateless.</description>
+    </item>
+    
+    <item>
+      <title>Docker Auto Discovery with Traefik</title>
+      <link>https://crazystylus.github.io/blog/post/general/docker-discovery/</link>
+      <pubDate>Mon, 29 Mar 2021 23:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/post/general/docker-discovery/</guid>
+      <description>Introduction When running containers directly with docker, one has to bear up with ports and networking directly. Actual environments make use of API Gateways, enabling API versioning and other standard features. One cannot achieve this out of the box with docker, but one may think of spinning a nginx/envoy proxy and configuring it to achieve the same feel. But that sounds like quite an overhead as one has to manually update configs for every new container being launched.</description>
+    </item>
+    
+  </channel>
+</rss>

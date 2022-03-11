@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.94.0" />
+
+  <title>How to create a basic Cloud Build CI/CD Pipeline &middot; Techy Tonik</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet" type="text/css">
+
+  
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+
+  <link rel="shortcut icon" href="https://crazystylus.github.io/blog/img/favicon.ico" type="image/x-icon" />
+
+  
+    
+        <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/asciinema-player.css">
+    
+  
+  
+    
+        <script src="https://crazystylus.github.io/blog/js/asciinema-player.js"></script>
+    
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://crazystylus.github.io/blog/"><i class='fa fa-user fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://crazystylus.github.io/blog/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/kartik-sharma-b2a852168" rel="me" target="_blank"><i class="fab fa-linkedin fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/crazystylus" rel="me" target="_blank"><i class="fab fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small></small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>How to create a basic Cloud Build CI/CD Pipeline</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>06 Mar 2021, 14:02</time>
+  </div>
+
+  
+
+  
+
+  
+  
+  
+  <div>
+    <i class="fa fa-tags fa-fw"></i>
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/gcloud">GCloud</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/cicd">CICD</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/cloudbuild">CloudBuild</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/serverless">Serverless</a>
+    
+  </div>
+  
+  
+
+</div>
+
+  <h1 id="introduction">Introduction</h1>
+<p>Cloud Build is a Serverless CI/CD platform offered by Google Cloud Platform. It can natively integrate with other GCP Products and can easily be integrated with Spinnaker also. We would we deploying application on Cloud Run which is also a serverless offering for container deployment.
+Some key benefits of Cloud Build are: -</p>
+<ol>
+<li>Fully serverless</li>
+<li>Flexible - We can use custom build steps and pre-created extensions</li>
+<li>Native Docker support</li>
+<li>Generous Free Tier - Free 120 build minutes per day</li>
+<li>Supports both local as well as building in the cloud</li>
+</ol>
+<p><asciinema-player src="https://asciinema.org/a/400922.cast" async data-autoplay="true" data-size="big" autoplay=1> </asciinema-player></p>
+<h1 id="requirements">Requirements</h1>
+<ol>
+<li>A Google Cloud Account associated with a billing account</li>
+<li>Google Cloud Shell</li>
+</ol>
+<p><strong>NOTE</strong> You can run the same through local env, but then you would be required to have appropriate packages and environment variables setup</p>
+<h1 id="getting-started">Getting Started</h1>
+<p>In this demo we will be building a simple Go App as a container image, pushing the image to Google Container Registry and then deploying it on Cloud Run.</p>
+<h2 id="enabling-apis">Enabling APIs</h2>
+<ol>
+<li>Cloud Build</li>
+<li>Cloud Run</li>
+<li>Google Container Registry</li>
+<li>Cloud Source Repo</li>
+<li>Cloud Shell (recommended)</li>
+<li>Also enable Cloud Run in Cloud Build settings, else builds will fail</li>
+</ol>
+<p><strong>NOTE</strong> I would be using <code>us-central1</code> (Iowa) for deploying the app</p>
+<h2 id="getting-the-application-for-pipeline">Getting the application for pipeline</h2>
+<p>You can use any go application here. I would be using a simple Go web-server using Gin Gonic which prints hello world and a visitor counter.
+Lets start by cloning the application in Cloud Shell.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># Handling multiple GOPATHs</span>
+</span></span><span style="display:flex;"><span>export GOPATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>go env GOPATH<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>export GOPATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>GOPATH##*:<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>git clone https://github.com/crazystylus/CloudBuild_demo.git
+</span></span><span style="display:flex;"><span>cp -r CloudBuild_demo/Part-1_Getting-Started/ $GOPATH/src/
+</span></span></code></pre></div><h2 id="testing-the-application">Testing the application</h2>
+<p>For testing the application we need to fetch the dependencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>pushd $GOPATH/src/Part-1_Getting-Started/
+</span></span><span style="display:flex;"><span>go mod init <span style="color:#75715e"># Required in go 1.15 and above</span>
+</span></span><span style="display:flex;"><span>go get -d -v ./...
+</span></span><span style="display:flex;"><span>go build -o main
+</span></span><span style="display:flex;"><span>popd
+</span></span><span style="display:flex;"><span>$GOPATH/src/Part-1_Getting-Started/main
+</span></span></code></pre></div><p>We can test by clicking on preview. We can refresh the page to see the counter incrementing.</p>
+<p><strong>NOTE</strong> Go is pre-installed in Cloud Shell. You may skip this step as we will be creating and testing a container image below</p>
+<h2 id="do-we-need-a-dockerfile-">Do we need a Dockerfile ?!?</h2>
+<p>It depends as we can build app through steps by Cloud Build but the end result would be executable artifacts instead of a container image. We need a container image at the end, so I will be writing a simple dockerfile for it. I am using a simple dockerfile, you may try multi-stage dockerfile also.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.14</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/app</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go get -d -v ./...<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go install -v ./...<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;app&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>We can check the container image by running below and opening preview in Cloud Shell: -</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker build -t hello-cloudbuild:v1 .
+</span></span><span style="display:flex;"><span>docker run -it -p 8080:8080 hello-cloudbuild:v1
+</span></span></code></pre></div><h2 id="writing-cloud-build-yaml-configuration">Writing Cloud Build yaml configuration</h2>
+<p>The pipelines in cloud build are written in YAML/JSON files. The name of the cloud build yaml can be specified in the triggers in the UI, otherwise one may use simple <code>cloudbuild.yaml</code>. Here Cloud Build will be creating container image of our app, then pushing the image to container registry. Finally it will deploy it to Cloud Run. We will be using the below pipeline: -</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">steps</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># In this step we are building the container image</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;gcr.io/cloud-builders/docker&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">Build</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">args</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;build&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;-t&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;gcr.io/$PROJECT_ID/hello-cloudbuild:v1-$SHORT_SHA&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;.&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># In this step we will be pushing the image to Google Container Registry</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;gcr.io/cloud-builders/docker&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">Push</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">args</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;push&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;gcr.io/$PROJECT_ID/hello-cloudbuild:v1-$SHORT_SHA&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># In this step we will be deploying the image to Cloud Run</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;gcr.io/cloud-builders/gcloud&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">Deploy</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">args</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;run&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;deploy&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;hello-cloudbuild&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--image&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;gcr.io/$PROJECT_ID/hello-cloudbuild:v1-$SHORT_SHA&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--allow-unauthenticated&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--platform&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;managed&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--region&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;us-central1&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">images</span>: [<span style="color:#e6db74">&#34;gcr.io/$PROJECT_ID/hello-cloudbuild:v1-$SHORT_SHA&#34;</span>]
+</span></span></code></pre></div><h2 id="getting-things-together">Getting things together</h2>
+<p>Now as we have the pipeline definition and the dockerfile for building the image, we can start putting the things together.</p>
+<p>Create a empty folder, an copy the cloudbuild.yaml, Dockerfile and main.go.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir test-dir
+</span></span><span style="display:flex;"><span>cp cloudbuild.yaml test-dir
+</span></span><span style="display:flex;"><span>cp Dockerfile test-dir
+</span></span><span style="display:flex;"><span>cp main.go test-dir
+</span></span><span style="display:flex;"><span>cd test-dir
+</span></span></code></pre></div><h2 id="creating-repo-and-configuring-cloud-build-trigger">Creating Repo and Configuring Cloud Build Trigger</h2>
+<p>Next we need to create a Cloud Source Repository, then attach the CloudBuild trigger.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Creating Cloud Source Repo</span>
+</span></span><span style="display:flex;"><span>gcloud source repos create go-hello-cloudbuild
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Creating Cloud Build Trigger</span>
+</span></span><span style="display:flex;"><span>gcloud beta builds triggers create cloud-source-repositories <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--repo<span style="color:#f92672">=</span>go-hello-cloudbuild <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--tag-pattern<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;.*&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--build-config<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;cloudbuild.yaml&#39;</span>
+</span></span></code></pre></div><p>Next step is initializing the local git repo and adding the remote so that we will be able to push to repo.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Initializing Git Repo with the code</span>
+</span></span><span style="display:flex;"><span>git init
+</span></span><span style="display:flex;"><span>git add .
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;Initial Commit&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Adding Remote to git repo</span>
+</span></span><span style="display:flex;"><span>git config --global credential.<span style="color:#e6db74">&#39;https://source.developers.google.com&#39;</span>.helper gcloud.sh
+</span></span><span style="display:flex;"><span>git remote add origin https://source.developers.google.com/p/<span style="color:#e6db74">${</span>GOOGLE_CLOUD_PROJECT<span style="color:#e6db74">}</span>/r/go-hello-cloudbuild
+</span></span></code></pre></div><h2 id="triggering-the-build">Triggering the Build</h2>
+<p>We can trigger the build by creating and pushing a tag to repo.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tagging and pushing to git repo</span>
+</span></span><span style="display:flex;"><span>git tag v1
+</span></span><span style="display:flex;"><span>git push -u origin --all
+</span></span><span style="display:flex;"><span>git push -u origin --tags
+</span></span></code></pre></div><p>Next you can visit the Cloud Build service in GCP Console and go to history tab to see the running build. Post build completion, we can see the container image under the Google Container Registry.</p>
+<h2 id="testing-the-deployed-app">Testing the deployed app</h2>
+<p>Once build is complete, you can either navigate to Cloud Run in Cloud Console or you can run below command to get the endpoint URL for testing the app.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gcloud run services list --platform managed --format json | jq <span style="color:#e6db74">&#39;.[] | select(.metadata.name==&#34;hello-cloudbuild&#34;)|.status.url&#39;</span>
+</span></span></code></pre></div><h2 id="cleaning-up-the-resources">Cleaning up the resources</h2>
+<p>You can run the below script to cleanup all gcp resources.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Listing triggers</span>
+</span></span><span style="display:flex;"><span>gcloud beta builds triggers list --format json | jq <span style="color:#e6db74">&#39;.[]&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Getting the trigger id</span>
+</span></span><span style="display:flex;"><span>export TRIGGER_ID<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>gcloud beta builds triggers list --format json | jq -r <span style="color:#e6db74">&#39;.[] | select( .triggerTemplate.repoName==&#34;go-hello-cloudbuild&#34;) | .id&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>echo $TRIGGER_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Deleting the trigger</span>
+</span></span><span style="display:flex;"><span>gcloud beta builds triggers delete <span style="color:#e6db74">${</span>TRIGGER_ID<span style="color:#e6db74">}</span> --quiet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Deleting Source Repository</span>
+</span></span><span style="display:flex;"><span>gcloud source repos delete  go-hello-cloudbuild --quiet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Deleting Cloud run Service</span>
+</span></span><span style="display:flex;"><span>gcloud run services delete --platform managed --region us-central1 hello-cloudbuild --quiet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Listing Container Image</span>
+</span></span><span style="display:flex;"><span>gcloud container images list --repository gcr.io/<span style="color:#e6db74">${</span>GOOGLE_CLOUD_PROJECT<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Deleting Container image</span>
+</span></span><span style="display:flex;"><span>gcloud container images list-tags gcr.io/<span style="color:#e6db74">${</span>GOOGLE_CLOUD_PROJECT<span style="color:#e6db74">}</span>/hello-cloudbuild --format json| jq -r --arg GOOGLE_CLOUD_PROJECT <span style="color:#e6db74">${</span>GOOGLE_CLOUD_PROJECT<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#39;[.[]| &#34;gcr.io/&#34;+$GOOGLE_CLOUD_PROJECT+&#34;/hello-cloudbuild@&#34;+.digest]| join(&#34; &#34;)&#39;</span> | xargs gcloud container images delete  -q --force-delete-tags
+</span></span></code></pre></div><p><strong>Find Full Code Here</strong> <a href="https://github.com/crazystylus/CloudBuild_demo/tree/main/Part-1_Getting-Started">https://github.com/crazystylus/CloudBuild_demo/tree/main/Part-1_Getting-Started</a></p>
+
+  
+  <h4><i class="fas fa-share-alt" aria-hidden="true"></i>&nbsp;Share!</h4>
+<ul class="share-buttons">
+	<li><a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-1%2f" target="_blank" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span class="sr-only">Share on Facebook</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="https://twitter.com/intent/tweet?source=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-1%2f" target="_blank" title="Tweet"><i class="fab fa-twitter" aria-hidden="true"></i><span class="sr-only">Tweet</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="https://plus.google.com/share?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-1%2f" target="_blank" title="Share on Google+"><i class="fab fa-google-plus" aria-hidden="true"></i><span class="sr-only">Share on Google+</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://www.tumblr.com/share?v=3&u=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-1%2f" target="_blank" title="Post to Tumblr"><i class="fab fa-tumblr" aria-hidden="true"></i><span class="sr-only">Post to Tumblr</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-1%2f" target="_blank" title="Pin it"><i class="fab fa-pinterest-p" aria-hidden="true"></i><span class="sr-only">Pin it</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://www.reddit.com/submit?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-1%2f" target="_blank" title="Submit to Reddit"><i class="fab fa-reddit-alien" aria-hidden="true"></i><span class="sr-only">Submit to Reddit</span></a>
+	</li>
+</ul>
+
+
+<style>
+	ul.share-buttons{
+	  list-style: none;
+	  padding: 0;
+	}
+
+	ul.share-buttons li{
+	  display: inline;
+	}
+
+	ul.share-buttons .sr-only{
+	  position: absolute;
+	  clip: rect(1px 1px 1px 1px);
+	  clip: rect(1px, 1px, 1px, 1px);
+	  padding: 0;
+	  border: 0;
+	  height: 1px;
+	  width: 1px;
+	  overflow: hidden;
+	}
+</style>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="next">
+      <a href="https://crazystylus.github.io/blog/post/general/docker-discovery/">Docker Auto Discovery with Traefik</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+    <a href="https://crazystylus.github.io/blog/post/general/docker-discovery/"><i class="fa fa-chevron-right"></i></a>
+    
+  </div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://crazystylus.github.io/blog/js/ui.js"></script>
+<script src="https://crazystylus.github.io/blog/js/menus.js"></script>
+
+
+
+
+
+
+
+
+<script src="https://crazystylus.github.io/blog/js/math-code.js"></script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+</body>
+</html>
+

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.94.0" />
+
+  <title>Docker Auto Discovery with Traefik &middot; Techy Tonik</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet" type="text/css">
+
+  
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+
+  <link rel="shortcut icon" href="https://crazystylus.github.io/blog/img/favicon.ico" type="image/x-icon" />
+
+  
+    
+        <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/asciinema-player.css">
+    
+  
+  
+    
+        <script src="https://crazystylus.github.io/blog/js/asciinema-player.js"></script>
+    
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://crazystylus.github.io/blog/"><i class='fa fa-user fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://crazystylus.github.io/blog/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/kartik-sharma-b2a852168" rel="me" target="_blank"><i class="fab fa-linkedin fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/crazystylus" rel="me" target="_blank"><i class="fab fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small></small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Docker Auto Discovery with Traefik</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>29 Mar 2021, 23:02</time>
+  </div>
+
+  
+
+  
+
+  
+  
+  
+  <div>
+    <i class="fa fa-tags fa-fw"></i>
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/docker">Docker</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/traefik">Traefik</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/networking">Networking</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/discovery">Discovery</a>
+    
+  </div>
+  
+  
+
+</div>
+
+  <h1 id="introduction">Introduction</h1>
+<p>When running containers directly with docker, one has to bear up with ports and networking directly. Actual environments make use of API Gateways, enabling API versioning and other standard features. One cannot achieve this out of the box with docker, but one may think of spinning a nginx/envoy proxy and configuring it to achieve the same feel. But that sounds like quite an overhead as one has to manually update configs for every new container being launched.</p>
+<p>Traefik is a leading modern reverse proxy and load balancer that makes deploying microservices easy. Traefik integrates with your existing infrastructure components and configures itself automatically and dynamically.</p>
+<h3 id="how-can-traefik-help-here">How can Traefik help here??</h3>
+<p>Traefik supports discovery for both Docker and Docker Swarm. One simply needs to attach labels to their docker containers to configure Traefik. It provides a very simplified dashboard. One simply needs to be aware of key concepts to understand Traefik.</p>
+<h2 id="understanding-traefik">Understanding Traefik</h2>
+<p>There are three components:-</p>
+<ol>
+<li>Entrypoints</li>
+<li>Routers
+<ul>
+<li>Rules</li>
+<li>Middlewares</li>
+</ul>
+</li>
+<li>Service</li>
+</ol>
+<p>Request will first hit the endpoints (Ports/Endpoints exposed by Traefik). Then the request will move to the routers, which further consists of rules and middlewares. A rule can be as simple as checking for prefix <code>/hello</code>. Next the accepted request will move to middlewares, which can be chained. Middlewares tweak the request before they are sent to service (Final Destination). For example we may want to strip the suffix <code>/hello</code> before our request is sent to our service. Services can be simply combination of a runnning container&rsquo;s IP and port.</p>
+<p>We will be configuring the above components by attaching labels to our containers.</p>
+<h2 id="deploying-an-api-and-versioning-it-with-traefik">Deploying an API and versioning it with Traefik</h2>
+<p>We will be deploying an application that takes a value from env variable APIVERSION and returns it to the user stating that it&rsquo;s the application&rsquo;s API Version. The application by default run on port 8080. Varying this variable will give the feel of deploying various API versions.
+<asciinema-player src="https://asciinema.org/a/403747.cast" async data-autoplay="true" data-size="big" autoplay=1 loop="true"> </asciinema-player></p>
+<h2 id="requirements">Requirements</h2>
+<ol>
+<li>Docker - Building and running containers</li>
+<li>Docker Compose - Running Traefik</li>
+<li>curl - Verifying the APIs</li>
+<li>sed - String manipulation and substitution</li>
+<li>2 Free Ports - docker-compose.yaml uses 8080 and 8081, if already in use please substitute them</li>
+</ol>
+<h3 id="building-the-api-container">Building the API container</h3>
+<p>We need to build the container image for this API</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/crazystylus/Docker-Traefik-Discovery.git
+</span></span><span style="display:flex;"><span>cd Docker-Traefik-Discovery
+</span></span><span style="display:flex;"><span>docker build . -t myapi:v1
+</span></span></code></pre></div><h2 id="configuring-the-labels">Configuring the labels</h2>
+<p>Below is are the labels generated by the script for apiversion 3.</p>
+<pre tabindex="0"><code>traefik.enable=true
+traefik.http.routers.myapi3.entrypoints=http
+traefik.http.routers.myapi3.rule=PathPrefix(`/myapi/v3{regex:11805|/.*}`)
+traefik.http.routers.myapi3.middlewares=myapi3-strip
+traefik.http.middlewares.myapi3-strip.stripprefix.prefixes=/myapi/v3
+</code></pre><h3 id="understanding-whats-happening-here-">Understanding what&rsquo;s happening here ?!?</h3>
+<p>In the first label we are mentioning that we want this application to be discovered by Traefik.
+Next we want our requests to enter from an entrypoint named <code>http</code>, which actually points to localhost:8081 as per the docker-compose file.
+Then we are using creating a rule which checks for prefix <code>/myapi/v3</code>. Only the requests which satisfy this rule will move forward to middleware.
+Now we are using a strip prefix middleware to remove <code>/myapi/v3</code> from our request. We don&rsquo;t need to specify the end service name, Traefik will automatically route it to our service.</p>
+<h3 id="generating-the-labels-dynamically">Generating the labels dynamically</h3>
+<p>We can use the script below to dynamically generate labels. We just need to run <code>export APIVERSION=x</code>, where x represents the API version we want and then run the script below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>echo <span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">traefik.enable=true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">traefik.http.routers.myapi</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">.entrypoints=http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">traefik.http.routers.myapi</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">.rule=PathPrefix(\`/myapi/v</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">{regex:</span>$$<span style="color:#e6db74">|/.*}\`)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">traefik.http.routers.myapi</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">.middlewares=myapi</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">-strip
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">traefik.http.middlewares.myapi</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">-strip.stripprefix.prefixes=/myapi/v</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | sed -e <span style="color:#e6db74">&#39;:a&#39;</span> -e <span style="color:#e6db74">&#39;N&#39;</span> -e <span style="color:#e6db74">&#39;$!ba&#39;</span> -e <span style="color:#e6db74">&#39;s/\n/ -l /g&#39;</span>
+</span></span></code></pre></div><p><strong>NOTE</strong> sed command simply replaces newline with -l option used to set label in docker command</p>
+<h2 id="testing-the-container">Testing the container</h2>
+<p>Run the below command and try opening <a href="http://localhost:8080">http://localhost:8080</a>, it should show the API Version as 9</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export APIVERSION<span style="color:#f92672">=</span>9; docker run -it <span style="color:#66d9ef">$(</span>./labels.sh<span style="color:#66d9ef">)</span> -e APIVERSION<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span> --rm -p 9090:8080 myapi:v1
+</span></span></code></pre></div><h2 id="getting-traefik-up-and-running">Getting Traefik up and running</h2>
+<p>It&rsquo;s very easy to configure and run traefik. You can simply do a docker-compose up to bring Traefik up</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker-compose up -d traefik
+</span></span></code></pre></div><h2 id="spawning-apis">Spawning APIs</h2>
+<p>We will put a for loop and spawn some various API versions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> APIVERSION in <span style="color:#f92672">{</span>1..6<span style="color:#f92672">}</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    export APIVERSION; docker run -d <span style="color:#66d9ef">$(</span>./labels.sh<span style="color:#66d9ef">)</span> -e APIVERSION<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>APIVERSION<span style="color:#e6db74">}</span> -p <span style="color:#ae81ff">8080</span> --rm myapi:v1;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>;
+</span></span></code></pre></div><p>Next we will open the Traefik dashboard at <a href="http://localhost:8080">http://localhost:8080</a> and see the discovered containers. Next we can try hitting the containers
+To send traffic we just need to send traffic to http://localhost:8081 with correct path to access the correct API Version. For example to open API V2 one can access <a href="http://localhost:8081/myapi/v2/">http://localhost:8081/myapi/v2/</a></p>
+<p>To check all running APIs we can run curl in a for loop</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>1..6<span style="color:#f92672">}</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    curl http://localhost:8081/myapi/v<span style="color:#e6db74">${</span>i<span style="color:#e6db74">}</span>/
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p><strong>NOTE</strong> Be sure to check that by mistake  <code>{</code> <code>}</code> are not being escaped by the shell else substitution of <code>${i}</code> with APIVERSION won&rsquo;t happen in the curl command</p>
+<h2 id="cleaning-up-the-containers">Cleaning up the containers</h2>
+<h3 id="removing-the-6-apis-we-created">Removing the 6 APIs we created</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker rm -f <span style="color:#66d9ef">$(</span>docker ps --filter <span style="color:#e6db74">&#34;ancestor=myapi:v1&#34;</span> -q<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p><strong>NOTE</strong> This will remove all containers running the image myapi:v1 which build and used in this demo</p>
+<h3 id="stopping-traefik">Stopping Traefik</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker-compose down
+</span></span></code></pre></div><p><strong>NOTE</strong> For this to work you need to be present in the folder with docker-compose.yaml</p>
+<p><strong>LINK TO GIT REPO</strong> <a href="https://github.com/crazystylus/Docker-Traefik-Discovery"><a href="https://github.com/crazystylus/Docker-Traefik-Discovery">https://github.com/crazystylus/Docker-Traefik-Discovery</a></a></p>
+
+  
+  <h4><i class="fas fa-share-alt" aria-hidden="true"></i>&nbsp;Share!</h4>
+<ul class="share-buttons">
+	<li><a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgeneral%2fdocker-discovery%2f" target="_blank" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span class="sr-only">Share on Facebook</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="https://twitter.com/intent/tweet?source=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgeneral%2fdocker-discovery%2f" target="_blank" title="Tweet"><i class="fab fa-twitter" aria-hidden="true"></i><span class="sr-only">Tweet</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="https://plus.google.com/share?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgeneral%2fdocker-discovery%2f" target="_blank" title="Share on Google+"><i class="fab fa-google-plus" aria-hidden="true"></i><span class="sr-only">Share on Google+</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://www.tumblr.com/share?v=3&u=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgeneral%2fdocker-discovery%2f" target="_blank" title="Post to Tumblr"><i class="fab fa-tumblr" aria-hidden="true"></i><span class="sr-only">Post to Tumblr</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgeneral%2fdocker-discovery%2f" target="_blank" title="Pin it"><i class="fab fa-pinterest-p" aria-hidden="true"></i><span class="sr-only">Pin it</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://www.reddit.com/submit?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgeneral%2fdocker-discovery%2f" target="_blank" title="Submit to Reddit"><i class="fab fa-reddit-alien" aria-hidden="true"></i><span class="sr-only">Submit to Reddit</span></a>
+	</li>
+</ul>
+
+
+<style>
+	ul.share-buttons{
+	  list-style: none;
+	  padding: 0;
+	}
+
+	ul.share-buttons li{
+	  display: inline;
+	}
+
+	ul.share-buttons .sr-only{
+	  position: absolute;
+	  clip: rect(1px 1px 1px 1px);
+	  clip: rect(1px, 1px, 1px, 1px);
+	  padding: 0;
+	  border: 0;
+	  height: 1px;
+	  width: 1px;
+	  overflow: hidden;
+	}
+</style>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-1/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-1/">How to create a basic Cloud Build CI/CD Pipeline</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="next">
+      <a href="https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-2/">CloudBuild: Speeding container builds by caching</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+    <a href="https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-2/"><i class="fa fa-chevron-right"></i></a>
+    
+  </div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://crazystylus.github.io/blog/js/ui.js"></script>
+<script src="https://crazystylus.github.io/blog/js/menus.js"></script>
+
+
+
+
+
+
+
+
+<script src="https://crazystylus.github.io/blog/js/math-code.js"></script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+</body>
+</html>
+

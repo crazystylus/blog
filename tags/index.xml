@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Techy Tonik</title>
+    <link>https://crazystylus.github.io/blog/tags/</link>
+    <description>Recent content in Tags on Techy Tonik</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 31 Mar 2021 23:59:29 +0530</lastBuildDate><atom:link href="https://crazystylus.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Caching</title>
+      <link>https://crazystylus.github.io/blog/tags/caching/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/caching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CloudBuild</title>
+      <link>https://crazystylus.github.io/blog/tags/cloudbuild/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/cloudbuild/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ContainerImages</title>
+      <link>https://crazystylus.github.io/blog/tags/containerimages/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/containerimages/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker</title>
+      <link>https://crazystylus.github.io/blog/tags/docker/</link>
+      <pubDate>Wed, 31 Mar 2021 23:59:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Discovery</title>
+      <link>https://crazystylus.github.io/blog/tags/discovery/</link>
+      <pubDate>Mon, 29 Mar 2021 23:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/discovery/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Networking</title>
+      <link>https://crazystylus.github.io/blog/tags/networking/</link>
+      <pubDate>Mon, 29 Mar 2021 23:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/networking/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Traefik</title>
+      <link>https://crazystylus.github.io/blog/tags/traefik/</link>
+      <pubDate>Mon, 29 Mar 2021 23:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/traefik/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CICD</title>
+      <link>https://crazystylus.github.io/blog/tags/cicd/</link>
+      <pubDate>Sat, 06 Mar 2021 14:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/cicd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>GCloud</title>
+      <link>https://crazystylus.github.io/blog/tags/gcloud/</link>
+      <pubDate>Sat, 06 Mar 2021 14:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/gcloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Serverless</title>
+      <link>https://crazystylus.github.io/blog/tags/serverless/</link>
+      <pubDate>Sat, 06 Mar 2021 14:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/tags/serverless/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

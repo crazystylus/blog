@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.94.0" />
+
+  <title>CloudBuild: Speeding container builds by caching &middot; Techy Tonik</title>
+
+    
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet" type="text/css">
+
+  
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+
+  <link rel="shortcut icon" href="https://crazystylus.github.io/blog/img/favicon.ico" type="image/x-icon" />
+
+  
+    
+        <link rel="stylesheet" href="https://crazystylus.github.io/blog/css/asciinema-player.css">
+    
+  
+  
+    
+        <script src="https://crazystylus.github.io/blog/js/asciinema-player.js"></script>
+    
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://crazystylus.github.io/blog/"><i class='fa fa-user fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://crazystylus.github.io/blog/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://linkedin.com/in/kartik-sharma-b2a852168" rel="me" target="_blank"><i class="fab fa-linkedin fa-fw"></i>LinkedIn</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/crazystylus" rel="me" target="_blank"><i class="fab fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small></small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>CloudBuild: Speeding container builds by caching</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>31 Mar 2021, 23:59</time>
+  </div>
+
+  
+
+  
+
+  
+  
+  
+  <div>
+    <i class="fa fa-tags fa-fw"></i>
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/docker">Docker</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/cloudbuild">CloudBuild</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/containerimages">ContainerImages</a>&nbsp;&#47;
+    
+      <a class="post-taxonomy-tag" href="https://crazystylus.github.io/blog/tags/caching">Caching</a>
+    
+  </div>
+  
+  
+
+</div>
+
+  <h1 id="introduction">Introduction</h1>
+<p>When building containers we can always leverage the layer caching mechanism to speed up the container builds. This can become tricky depending on the CI/CD tool used for building the images. For offering like Jenkins we may not need to worry much as we can expect a copy of previously build container image to be present. On the other hand, if we see Cloud Build it won&rsquo;t have a copy of previous build, as the offering is serverless so starts light and stateless. One can simply pull the whole image in the first step of building the image, but that&rsquo;s not optimized as it will contain extra layers and in many cases like MultiStage dockerfile, we may not even have those layers in the previous image as the builder container has those dependencies which gets discarded.</p>
+<h2 id="how-to-approach-the-problem-then">How to approach the problem then?</h2>
+<p>We can consider 2 cases here: -</p>
+<ol>
+<li>Single Stage Dockerfile (example python)</li>
+<li>Multistage Dockerfile (example Golang, Java)</li>
+</ol>
+<p>But in the end process will be the same. In this approach we need to duplicate(name it <code>Dockerfile.builder</code>) the original Dockerfile and comment all lines after fetching the build dependencies. Next follow the steps below: -</p>
+<ol>
+<li>Try to pull a docker image with tag <code>builder</code>. You also need to append <code>|| true</code> at the end of the command.</li>
+<li>Build the <code>Dockerfile.builder</code> with <code>--cache-from IMAGE_NAME:builder</code>. If the cache from image doesn&rsquo;t exist, this step will not fail. This step ensure that any changes in dependencies is reflected in builder image.</li>
+<li>Then push the builder image</li>
+<li>Then build the main Dockerfile with same with <code>--cache-from IMAGE_NAME:builder</code></li>
+<li>Then you can push the main image</li>
+</ol>
+<h3 id="pros">Pros</h3>
+<ol>
+<li>Don&rsquo;t need to pull complete container images</li>
+<li>This works perfectly with multi-stage Dockerfile</li>
+<li>No need to stick to naming main container image as latest</li>
+</ol>
+<h3 id="cons">Cons</h3>
+<ol>
+<li>Adds a bit complexity to pipeline</li>
+<li>Doubles the count of Dockerfile, but no operational overhead as we just need to comment lower-half of Dockerfile</li>
+<li>In case of python, one can simply use prebuilt base image with packages but then we need to maintain that separately</li>
+</ol>
+<h2 id="working-with-single-stage-dockerfile">Working with single stage Dockerfile</h2>
+<p>The flow of the Dockerfile should be correct. For example: -</p>
+<p>Consider a python flask application. You can&rsquo;t have a Dockerfile like this</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8.5-slim</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install -r requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#960050;background-color:#1e0010">&#39;gunicorn&#39;</span>,<span style="color:#960050;background-color:#1e0010">&#39;wsgi:app&#39;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>Here if you realize when we run <code>COPY . .</code>, we also copy the code files along with requirements.txt which will have a change maximum number of times. Instead we should just copy <code>requirements.txt</code> and then get dependencies. Post that we can do a <code>COPY . .</code>. The core idealogy is to make container layers such that static contents lie in starting commands and dynamic content like copying the source code lies at the bottom of dockerfile allowing caching to work just fine. Check the Dockerfile below for reference: -</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8.5-slim</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip3 install -r requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8080</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;/bin/sh&#34;</span>,<span style="color:#e6db74">&#34;-c&#34;</span>,<span style="color:#e6db74">&#34;gunicorn wsgi:app&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>Writing the dockerfile.builder. As you can see we have the same dockerfile, but commented everything post fetching the dependencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.8.5-slim</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip3 install -r requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#COPY . .</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#EXPOSE 8080</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#CMD [&#34;/bin/sh&#34;,&#34;-c&#34;,&#34;gunicorn wsgi:app&#34;]</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><h3 id="building-in-local-docker-env">Building in local Docker env</h3>
+<p>We are building in local env, so I will be skipping the step where we pull builder image.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Building the builder image and using it&#39;s own image as cache to skip re-build in case of no change in dependencies</span>
+</span></span><span style="display:flex;"><span>docker build . -t myflaskapp:builder --cache-from<span style="color:#f92672">=</span>myflaskapp:builder -f Dockerfile.builder
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building the application container with builder as cache.</span>
+</span></span><span style="display:flex;"><span>docker build . -t myflaskapp:app-v1 --cache-from<span style="color:#f92672">=</span>myflaskapp:builder -f Dockerfile
+</span></span></code></pre></div><p>We can see a significant speedup in cases when we have huge dependencies</p>
+<h3 id="building-in-cloudbuild-pipeline">Building in CloudBuild Pipeline</h3>
+<p><strong>TODO</strong></p>
+<h3 id="contradiction">Contradiction</h3>
+<p>One might say that we can get the same performance by using main docker image as cache. I won&rsquo;t certainly deny that it works well in situations like this, but we do have cases when the built binaries are as bug as 800Mb which would mean when you pull the main image instead of builder, you are pulling 800Mb of extra junk. This contradiction is not valid for multi-stage dockerfile, we will see that below.</p>
+<h2 id="working-with-multi-stage-dockerfile">Working with multi-stage Dockerfile</h2>
+<p>Consider a simple GoLang application here. Below is the main Dockerfile of our application: -</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.15 as builder</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/app</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.mod .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go mod download<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> GOOS<span style="color:#f92672">=</span>linux go build -o main ./...<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine:latest</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /go/src/app/main .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;./main&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>From seeing this Dockerfile, you can immediately understand that the container named as builder downloads all dependencies for our application, but it gets excluded completely from our final image. So in this case by default we have no caching.</p>
+<p>To solve this our Dockerfile.builder will look like this: -</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.15 as builder</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /go/src/app</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.mod .<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go mod download<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#COPY . .</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#RUN CGO_ENABLED=0 GOOS=linux go build -o main ./...</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#FROM alpine:latest</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#COPY --from=builder /go/src/app/main .</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#CMD [&#34;./main&#34;]</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>Seeing this Dockerfile, you will realize we stop at the point when we fetch the dependencies, so the output container image will only contain the builder.</p>
+<h3 id="building-in-local-docker-env-1">Building in local Docker env</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Building the builder image and using it&#39;s own image as cache to skip re-build in case of no change in dependencies</span>
+</span></span><span style="display:flex;"><span>docker build . -t godemo:builder --cache-from<span style="color:#f92672">=</span>godemo:builder -f Dockerfile.builder
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building the application container with builder as cache.</span>
+</span></span><span style="display:flex;"><span>docker build . -t godemo:app-v1 --cache-from<span style="color:#f92672">=</span>godemo:builder -f Dockerfile
+</span></span></code></pre></div><p>This will perform as good as a single stage stage dockerfile. But here we will have an overhead of pulling 2 base images: Alpine and Golang. We will still see a significant speedup here as we only be compiling the application.</p>
+<h3 id="building-in-cloudbuild-pipeline-1">Building in CloudBuild Pipeline</h3>
+<p><strong>TODO</strong></p>
+
+  
+  <h4><i class="fas fa-share-alt" aria-hidden="true"></i>&nbsp;Share!</h4>
+<ul class="share-buttons">
+	<li><a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-2%2f" target="_blank" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span class="sr-only">Share on Facebook</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="https://twitter.com/intent/tweet?source=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-2%2f" target="_blank" title="Tweet"><i class="fab fa-twitter" aria-hidden="true"></i><span class="sr-only">Tweet</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="https://plus.google.com/share?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-2%2f" target="_blank" title="Share on Google+"><i class="fab fa-google-plus" aria-hidden="true"></i><span class="sr-only">Share on Google+</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://www.tumblr.com/share?v=3&u=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-2%2f" target="_blank" title="Post to Tumblr"><i class="fab fa-tumblr" aria-hidden="true"></i><span class="sr-only">Post to Tumblr</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://pinterest.com/pin/create/button/?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-2%2f" target="_blank" title="Pin it"><i class="fab fa-pinterest-p" aria-hidden="true"></i><span class="sr-only">Pin it</span></a>
+	</li>&nbsp;&nbsp;&nbsp;
+	<li><a href="http://www.reddit.com/submit?url=https%3a%2f%2fcrazystylus.github.io%2fblog%2fpost%2fgcloud%2fcloudbuild_part-2%2f" target="_blank" title="Submit to Reddit"><i class="fab fa-reddit-alien" aria-hidden="true"></i><span class="sr-only">Submit to Reddit</span></a>
+	</li>
+</ul>
+
+
+<style>
+	ul.share-buttons{
+	  list-style: none;
+	  padding: 0;
+	}
+
+	ul.share-buttons li{
+	  display: inline;
+	}
+
+	ul.share-buttons .sr-only{
+	  position: absolute;
+	  clip: rect(1px 1px 1px 1px);
+	  clip: rect(1px, 1px, 1px, 1px);
+	  padding: 0;
+	  border: 0;
+	  height: 1px;
+	  width: 1px;
+	  overflow: hidden;
+	}
+</style>
+
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://crazystylus.github.io/blog/post/general/docker-discovery/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://crazystylus.github.io/blog/post/general/docker-discovery/">Docker Auto Discovery with Traefik</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+
+</div>
+
+</div>
+</div>
+<script src="https://crazystylus.github.io/blog/js/ui.js"></script>
+<script src="https://crazystylus.github.io/blog/js/menus.js"></script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+

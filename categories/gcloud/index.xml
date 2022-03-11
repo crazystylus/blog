@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GCloud on Techy Tonik</title>
+    <link>https://crazystylus.github.io/blog/categories/gcloud/</link>
+    <description>Recent content in GCloud on Techy Tonik</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 06 Mar 2021 14:02:29 +0530</lastBuildDate><atom:link href="https://crazystylus.github.io/blog/categories/gcloud/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to create a basic Cloud Build CI/CD Pipeline</title>
+      <link>https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-1/</link>
+      <pubDate>Sat, 06 Mar 2021 14:02:29 +0530</pubDate>
+      
+      <guid>https://crazystylus.github.io/blog/post/gcloud/cloudbuild_part-1/</guid>
+      <description>Introduction Cloud Build is a Serverless CI/CD platform offered by Google Cloud Platform. It can natively integrate with other GCP Products and can easily be integrated with Spinnaker also. We would we deploying application on Cloud Run which is also a serverless offering for container deployment. Some key benefits of Cloud Build are: -
+ Fully serverless Flexible - We can use custom build steps and pre-created extensions Native Docker support Generous Free Tier - Free 120 build minutes per day Supports both local as well as building in the cloud</description>
+    </item>
+    
+  </channel>
+</rss>
